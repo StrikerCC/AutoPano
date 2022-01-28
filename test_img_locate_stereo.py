@@ -6,19 +6,19 @@ import numpy as np
 import open3d as o3
 import transforms3d as tf3
 
-import camera.calibration
-import utils.dataset
-import utils.feature
-import utils.mapping
-from camera.cam import BiCamera
-from camera.calibration import stereo_calibrate
-import utils.vis
+
+import slam_lib.camera.calibration
+import slam_lib.dataset
+import slam_lib.feature
+import slam_lib.mapping
+from slam_lib.camera.cam import BiCamera
+import slam_lib.vis
 
 
 def main():
     """3d reconstruction"""
     dataset_dir = '/home/cheng/Pictures/data/202201251506/'
-    data_stereo = utils.dataset.get_calibration_and_img(dataset_dir)
+    data_stereo = slam_lib.dataset.get_calibration_and_img(dataset_dir)
     data_stereo['left_general_img'] = data_stereo['left_general_img'][4:]
     data_stereo['right_general_img'] = data_stereo['right_general_img'][4:]
 
@@ -60,7 +60,7 @@ def main():
 
         # extract feature
         time_start = time.time()
-        pts_2d_left, sift_left, pts_2d_right, sift_right = utils.feature.get_sift_and_pts(gray_left, gray_right, flag_debug=True)
+        pts_2d_left, sift_left, pts_2d_right, sift_right = slam_lib.feature.get_sift_and_pts(gray_left, gray_right, flag_debug=True)
 
         print('get features in', time.time() - time_start, 'seconds')
 
@@ -74,7 +74,7 @@ def main():
 
         '''mapping to global camera frame'''
         # compute interested 3d pts in global frame
-        tf_left_2_right = utils.mapping.rt_2_tf(stereo.r, stereo.t)
+        tf_left_2_right = slam_lib.mapping.rt_2_tf(stereo.r, stereo.t)
         # pts_3d_general_skin_in_right = utils.mapping.transform_pt_3d(tf=tf_left_2_right, pts=pts_3d_general_skin_in_left)
         pts_3d_general_skin_in_right = pts_3d_general_skin_in_left
 

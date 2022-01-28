@@ -6,11 +6,11 @@
 @time: 12/10/21 3:58 PM
 """
 import cv2
-import utils.match_by_feature
+import slam_lib.feature
 
 
 def find_homo(img_src, img_tgt, flag_vis_feature_matching=False):
-    pts_src, pts_tgt = utils.match_by_feature.match_pts(img_src, img_tgt, flag_vis_feature_matching)
+    pts_src, pts_tgt = slam_lib.feature.match_pts(img_src, img_tgt, flag_vis_feature_matching)
     if pts_src.shape[0] < 0 or pts_tgt.shape[0] < 4:
         print('Not enough points ' + str(pts_src.shape[0]) + ' and ' + str(pts_tgt.shape[0]))
         return None

@@ -1,12 +1,11 @@
-import numpy
 import cv2
-import utils.dataset
-import utils.view_geometry
+import slam_lib.dataset
+import homo as homography
 import img_stitching
 
 
 def main():
-    mono_img_paths, stereo_img_paths = utils.dataset.get_triple_camera_data('./data/triple/')
+    mono_img_paths, stereo_img_paths = slam_lib.dataset.get_triple_camera_data('./data/triple/')
     print(mono_img_paths)
     print(stereo_img_paths)
 
@@ -25,7 +24,7 @@ def main():
                 # get local feature
                 # match
                 # find homograph
-                homo = utils.view_geometry.find_homo(img_local, img_mono, flag_vis_feature_matching=True)
+                homo = homography.find_homo(img_local, img_mono, flag_vis_feature_matching=True)
                 if homo is None:
                     continue
                 print(homo)
