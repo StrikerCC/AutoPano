@@ -19,7 +19,7 @@ def xyxy_2_corners_coord(x_min, y_min, x_max, y_max):
     return img_box_coord_tgt
 
 
-def corners_2_xyxy(img_box_coord_tgt):
+def corners_2_bounding_box_xyxy(img_box_coord_tgt):
     # assert img_box_coord_tgt[0, 0] == img_box_coord_tgt[-1, 0], 'x_min ' + str(img_box_coord_tgt[0, 0]) + ' not equals to ' + str(img_box_coord_tgt[-1, 0])
     # assert img_box_coord_tgt[0, 1] == img_box_coord_tgt[1, 1], 'y_min ' + str(img_box_coord_tgt[0, 1]) + ' not equals to ' + str(img_box_coord_tgt[1, 1])
     # assert img_box_coord_tgt[1, 0] == img_box_coord_tgt[2, 0], 'x_max ' + str(img_box_coord_tgt[1, 0]) + ' not equals to ' + str(img_box_coord_tgt[2, 0])
@@ -41,7 +41,7 @@ def main():
     xyxy = (0, 0, 100, 100)
     corners = xyxy_2_corners_coord(*xyxy)
     print(corners)
-    xyxy = corners_2_xyxy(corners)
+    xyxy = corners_2_bounding_box_xyxy(corners)
     print(xyxy)
 
 

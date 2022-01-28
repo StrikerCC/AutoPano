@@ -37,7 +37,7 @@ def match_pts(img1, img2, flag_debug=False):
     kp2, des2 = sift_features(img2, flag_debug)
     bf = cv2.BFMatcher_create()
     matches = bf.knnMatch(des1, des2, k=2)
-    good_matches = [first for first, second in matches if first.distance < 0.55 * second.distance]
+    good_matches = [first for first, second in matches if first.distance < 0.85 * second.distance]
 
     if flag_debug:
         print('Get ', len(good_matches), ' good matches')

@@ -35,7 +35,7 @@ def warp_img(img_src, img_tgt, homo_src_2_tgt):
     # top_left, top_right, low_right, low_left, in xyxy'''
     img_corners_src_warped = np.matmul(homo_src_2_tgt, img_corners_src.T).T
     img_corners_src_warped = img_corners_src_warped / img_corners_src_warped[:, -1:]
-    img_box_src_warp = utils.geometry.corners_2_xyxy(img_corners_src_warped)
+    img_box_src_warp = utils.geometry.corners_2_bounding_box_xyxy(img_corners_src_warped)
 
     img_box_tgt_plus_warped_src = utils.geometry.merge_box([img_box_src_warp, img_box_tgt])
 
@@ -48,7 +48,7 @@ def warp_img(img_src, img_tgt, homo_src_2_tgt):
     out_size = (int(img_box_tgt_plus_warped_src[2]-img_box_tgt_plus_warped_src[0]), int(img_box_tgt_plus_warped_src[3]-img_box_tgt_plus_warped_src[1]))
     homo_tgt_2_out = euclidean_tgt_2_out
     img_corners_tgt_in_out = np.matmul(euclidean_tgt_2_out, img_corners_tgt.T).T
-    img_box_tgt_in_out = utils.geometry.corners_2_xyxy(img_corners_tgt_in_out)
+    img_box_tgt_in_out = utils.geometry.corners_2_bounding_box_xyxy(img_corners_tgt_in_out)
 
     # update the transformation from src im to output img
     homo_src_2_out = np.matmul(homo_tgt_2_out, homo_src_2_tgt)
@@ -57,6 +57,13 @@ def warp_img(img_src, img_tgt, homo_src_2_tgt):
     # print(img_corners_src_warped)
     img_warped = cv2.warpPerspective(img_src, homo_src_2_out, dsize=out_size)
 
+    # mapping src to out img
+    img_warped_tgt = cv2.warpPerspective(img_tgt, homo_tgt_2_out, dsize=out_size)
+    img_warped_tgt[img_warped > 0] = 0
+    img_warped = img_warped + img_warped_tgt
+    # mapping tgt to out img
+
+    # compute overlapping
     img_blending, mask_overlapping = utils.img_blending.blend_by_median(img_tgt, img_warped[int(img_box_tgt_in_out[1]):int(img_box_tgt_in_out[3]), int(img_box_tgt_in_out[0]):int(img_box_tgt_in_out[2])])
     img_warped[int(img_box_tgt_in_out[1]):int(img_box_tgt_in_out[3]), int(img_box_tgt_in_out[0]):int(img_box_tgt_in_out[2])][mask_overlapping] = img_blending[mask_overlapping]
 

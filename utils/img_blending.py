@@ -19,7 +19,7 @@ def blend_by_median(img1, img2):
     mask2 = img2 != 0
     mask_overlapping = np.logical_and(mask1, mask2)
     img_merge = img1.copy()
-    img_merge[mask_overlapping] = (img1[mask_overlapping].astype(int)/3*2 + img2[mask_overlapping].astype(int)/3)
+    img_merge[mask_overlapping] = (img1[mask_overlapping].astype(int)/3*2*0 + img2[mask_overlapping].astype(int)/1)
     return img_merge, mask_overlapping
 
 
