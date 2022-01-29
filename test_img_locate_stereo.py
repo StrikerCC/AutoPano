@@ -65,7 +65,7 @@ def main():
         print('get features in', time.time() - time_start, 'seconds')
 
         # compute feature 3d coord
-        pts_3d_general_skin_in_left = stereo.transform_raw_pixel_to_world_coordiante(pts_2d_left, pts_2d_right)
+        pts_3d_general_skin_in_left_rectify = stereo.transform_raw_pixel_to_world_coordiante(pts_2d_left, pts_2d_right)
 
         # get color for 3d feature points
         color_general_skin = (img_left[pts_2d_left.T[::-1].astype(int).tolist()] + img_right[pts_2d_right.T[::-1].astype(int).tolist()])[::-1] / 2 / 255.0   # take average of left and right bgr, then convert to normalized rgb
@@ -74,9 +74,11 @@ def main():
 
         '''mapping to global camera frame'''
         # compute interested 3d pts in global frame
+        tf_left_2_left_rectify = slam_lib.mapping.rt_2_tf(stereo.cam_left.rotation_rectify, np.zeros((3, 1)))
         tf_left_2_right = slam_lib.mapping.rt_2_tf(stereo.r, stereo.t)
-        # pts_3d_general_skin_in_right = utils.mapping.transform_pt_3d(tf=tf_left_2_right, pts=pts_3d_general_skin_in_left)
-        pts_3d_general_skin_in_right = pts_3d_general_skin_in_left
+
+        pts_3d_general_skin_in_left = slam_lib.mapping.transform_pt_3d(np.linalg.inv(tf_left_2_left_rectify), pts_3d_general_skin_in_left_rectify)
+        pts_3d_general_skin_in_right = slam_lib.mapping.transform_pt_3d(tf_left_2_right, pts_3d_general_skin_in_left_rectify)
 
         # compute 2d pixel coord of interested 3d pts in global pixel frame
 
@@ -107,7 +109,7 @@ def main():
 
         # mask out some wrong point by distance away from camera
         # pts_3d = pts_3d[np.linalg.norm(pts_3d, axis=-1) < distance_max]
-        pc_general.points = o3.utility.Vector3dVector(pts_3d_general_skin_in_left)
+        pc_general.points = o3.utility.Vector3dVector(pts_3d_general_skin_in_left_rectify)
         pc_general.colors = o3.utility.Vector3dVector(color_general_skin)
 
         o3.visualization.draw_geometries([pc_general, frame_left, frame_right])
